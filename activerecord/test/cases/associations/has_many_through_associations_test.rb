@@ -1166,4 +1166,18 @@ class HasManyThroughAssociationsTest < ActiveRecord::TestCase
     post_through = organization.posts.build
     assert_equal post_direct.author_id, post_through.author_id
   end
+
+  def test_has_many_through_should_delete_in_memory_association_record
+    person = Person.new(first_name: "Peter")
+    post = Post.new(title: "Cats & Dogs", body: "are pets")
+    
+    person.posts << post
+    assert person.posts.include?(post)
+    
+    person.posts.delete(post)
+    assert_not person.posts.include?(post), "should not contain the post after deletion but did."
+    
+    person.save!
+    assert_not person.posts.include?(post)
+  end
 end
